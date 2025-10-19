@@ -1,0 +1,200 @@
+[
+  {
+    "_id": "6712a0019c1a9e001a7b5001",
+    "name": "Boneless Beef",
+    "description": "Premium boneless beef, perfect for curries and grilling.",
+    "category": "beef",
+    "subcategory": "boneless",
+    "price": 419,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/boneless-beef.jpg", "alt": "Boneless Beef" }
+    ],
+    "availability": { "inStock": true, "quantity": 50 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "boneless", "premium"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.5, "count": 90 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5002",
+    "name": "Brisket",
+    "description": "Tender beef brisket cut, ideal for slow cooking and smoking.",
+    "category": "beef",
+    "subcategory": "brisket",
+    "price": 499,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/brisket.jpg", "alt": "Beef Brisket" }
+    ],
+    "availability": { "inStock": true, "quantity": 40 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "brisket", "slow-cook"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.6, "count": 75 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5003",
+    "name": "Brisket 4kg Pack",
+    "description": "Family-size 4kg beef brisket pack for roasts and BBQ.",
+    "category": "beef",
+    "subcategory": "brisket",
+    "price": 1996,
+    "weight": { "value": 4, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/brisket-4kg.jpg", "alt": "Brisket 4kg Pack" }
+    ],
+    "availability": { "inStock": true, "quantity": 10 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "brisket", "bulk-pack"],
+    "discount": { "percentage": 5, "validUntil": "2025-12-31T00:00:00.000Z" },
+    "ratings": { "average": 4.7, "count": 50 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5004",
+    "name": "Chuck",
+    "description": "Beef chuck cut suitable for stews and curries.",
+    "category": "beef",
+    "subcategory": "chuck",
+    "price": 419,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-chuck.jpg", "alt": "Beef Chuck" }
+    ],
+    "availability": { "inStock": true, "quantity": 30 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "chuck", "stew"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.4, "count": 60 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5005",
+    "name": "Tenderloin",
+    "description": "Soft and juicy beef tenderloin, ideal for steaks.",
+    "category": "beef",
+    "subcategory": "tenderloin",
+    "price": 419,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-tenderloin.jpg", "alt": "Beef Tenderloin" }
+    ],
+    "availability": { "inStock": true, "quantity": 25 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "tenderloin", "steak"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.8, "count": 100 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5006",
+    "name": "Ribs",
+    "description": "Beef ribs perfect for BBQ and roasting.",
+    "category": "beef",
+    "subcategory": "ribs",
+    "price": 419,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-ribs.jpg", "alt": "Beef Ribs" }
+    ],
+    "availability": { "inStock": true, "quantity": 20 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "ribs", "bbq"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.6, "count": 85 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5007",
+    "name": "Heart",
+    "description": "Beef heart rich in iron and protein, cleaned and ready to cook.",
+    "category": "beef",
+    "subcategory": "organ",
+    "price": 399,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-heart.jpg", "alt": "Beef Heart" }
+    ],
+    "availability": { "inStock": true, "quantity": 15 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "heart", "organ-meat"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.2, "count": 40 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5008",
+    "name": "Liver",
+    "description": "Fresh beef liver, a nutrient-rich organ meat.",
+    "category": "beef",
+    "subcategory": "organ",
+    "price": 299,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-liver.jpg", "alt": "Beef Liver" }
+    ],
+    "availability": { "inStock": true, "quantity": 20 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "liver", "organ-meat"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.3, "count": 55 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5009",
+    "name": "Tongue",
+    "description": "Beef tongue cut, cleaned and ready for cooking.",
+    "category": "beef",
+    "subcategory": "organ",
+    "price": 419,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-tongue.jpg", "alt": "Beef Tongue" }
+    ],
+    "availability": { "inStock": true, "quantity": 10 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "tongue", "organ-meat"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.0, "count": 30 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5010",
+    "name": "Boti",
+    "description": "Beef boti pieces perfect for spicy curries and grills.",
+    "category": "beef",
+    "subcategory": "boti",
+    "price": 159,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-boti.jpg", "alt": "Beef Boti" }
+    ],
+    "availability": { "inStock": true, "quantity": 35 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "boti", "spicy"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 4.1, "count": 45 },
+    "isActive": true
+  },
+  {
+    "_id": "6712a0019c1a9e001a7b5011",
+    "name": "Kappam",
+    "description": "Beef fat layer (Kappam) suitable for flavor-rich cooking.",
+    "category": "beef",
+    "subcategory": "fat",
+    "price": 120,
+    "weight": { "value": 1, "unit": "kg" },
+    "images": [
+      { "url": "https://example.com/images/beef-kappam.jpg", "alt": "Beef Kappam" }
+    ],
+    "availability": { "inStock": true, "quantity": 25 },
+    "preparationMethod": "fresh",
+    "tags": ["beef", "fat", "kappam"],
+    "discount": { "percentage": 0 },
+    "ratings": { "average": 3.9, "count": 20 },
+    "isActive": true
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "_id": "6712a5c49c1a9e001a7b6001",
+  "user": "68f21710149d81ce22269450",
+  "items": [
+    {
+      "_id": "6712a5c49c1a9e001a7b6002",
+      "product": "6712a0019c1a9e001a7b5001",
+      "quantity": 2,
+      "priceAtTime": 419,
+      "createdAt": "2025-10-18T13:30:00.000Z",
+      "updatedAt": "2025-10-18T13:30:00.000Z"
+    },
+    {
+      "_id": "6712a5c49c1a9e001a7b6003",
+      "product": "6712a0019c1a9e001a7b5002",
+      "quantity": 1,
+      "priceAtTime": 499,
+      "createdAt": "2025-10-18T13:30:00.000Z",
+      "updatedAt": "2025-10-18T13:30:00.000Z"
+    }
+  ],
+  "totalItems": 3,
+  "totalAmount": 1337,
+  "createdAt": "2025-10-18T13:30:00.000Z",
+  "updatedAt": "2025-10-18T13:30:00.000Z"
+}
