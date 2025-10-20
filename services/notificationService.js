@@ -184,13 +184,16 @@ class NotificationService {
       // TODO: Implement push notification service (Firebase, OneSignal, etc.)
       console.log(`📱 Push notification sent: ${notification.title}`);
       
-      notification.channels.push.sent = true;
-      notification.channels.push.sentAt = new Date();
-      await notification.save();
+      // Use findByIdAndUpdate to avoid parallel save conflicts
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.push.sent': true,
+        'channels.push.sentAt': new Date()
+      });
     } catch (error) {
       console.error('Push notification failed:', error);
-      notification.channels.push.error = error.message;
-      await notification.save();
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.push.error': error.message
+      });
     }
   }
 
@@ -202,13 +205,16 @@ class NotificationService {
       // TODO: Implement email service (SendGrid, SES, etc.)
       console.log(`📧 Email notification sent: ${notification.title}`);
       
-      notification.channels.email.sent = true;
-      notification.channels.email.sentAt = new Date();
-      await notification.save();
+      // Use findByIdAndUpdate to avoid parallel save conflicts
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.email.sent': true,
+        'channels.email.sentAt': new Date()
+      });
     } catch (error) {
       console.error('Email notification failed:', error);
-      notification.channels.email.error = error.message;
-      await notification.save();
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.email.error': error.message
+      });
     }
   }
 
@@ -220,13 +226,16 @@ class NotificationService {
       // TODO: Implement SMS service (Twilio, etc.)
       console.log(`📱 SMS notification sent: ${notification.title}`);
       
-      notification.channels.sms.sent = true;
-      notification.channels.sms.sentAt = new Date();
-      await notification.save();
+      // Use findByIdAndUpdate to avoid parallel save conflicts
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.sms.sent': true,
+        'channels.sms.sentAt': new Date()
+      });
     } catch (error) {
       console.error('SMS notification failed:', error);
-      notification.channels.sms.error = error.message;
-      await notification.save();
+      await Notification.findByIdAndUpdate(notification._id, {
+        'channels.sms.error': error.message
+      });
     }
   }
 

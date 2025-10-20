@@ -97,9 +97,9 @@ app.use('*', (req, res) => {
 // Database connection
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://192.168.1.4:27017/meat-delivery';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meat-delivery';
     console.log('Attempting to connect to MongoDB...');
-    console.log(`Connection URI: ${mongoURI.replace(/\/\/.*@/, '//***:***@')}`); // Hide credentials
+    console.log(`Connection URI: ${mongoURI.replace(/\/\/.*@/, '//***:***@').replace(/\/\/.*:.*@/, '//***:***@')}`); // Hide credentials
     
     const conn = await mongoose.connect(mongoURI, {
       serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
