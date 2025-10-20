@@ -104,7 +104,7 @@ MeatDeliveryBackend/
    Update the `.env` file with your configuration:
    ```env
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/meat-delivery
+   MONGODB_URI=mongodb://192.168.1.4:27017/meat-delivery
    JWT_SECRET=your-super-secret-jwt-key-here-please-change-in-production
    JWT_EXPIRE=7d
    NODE_ENV=development

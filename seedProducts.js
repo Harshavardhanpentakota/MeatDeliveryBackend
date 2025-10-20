@@ -10,7 +10,7 @@ const productData = JSON.parse(fs.readFileSync(path.join(__dirname, 'product_sam
 // Database connection
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meat-delivery';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://192.168.1.4:27017/meat-delivery';
     console.log('🔗 Connecting to MongoDB...');
     console.log(`Connection URI: ${mongoURI.replace(/\/\/.*@/, '//***:***@')}`);
     

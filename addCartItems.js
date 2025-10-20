@@ -7,7 +7,7 @@ const User = require('./models/User');
 // Database connection
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meat-delivery';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://192.168.1.4:27017/meat-delivery';
     console.log('🔗 Connecting to MongoDB...');
     
     await mongoose.connect(mongoURI, {

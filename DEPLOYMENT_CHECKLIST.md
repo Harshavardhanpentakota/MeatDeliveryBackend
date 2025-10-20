@@ -3,7 +3,7 @@
 ## 1. ✅ MongoDB Atlas Setup (REQUIRED)
 
 ### Current Issue:
-Your server.js is configured for local MongoDB: `mongodb://localhost:27017/meat-delivery`
+Your server.js is configured for local MongoDB: `mongodb://192.168.1.4:27017/meat-delivery`
 
 ### Action Required:
 **a) Create MongoDB Atlas Account:**
@@ -76,8 +76,8 @@ CORS_ORIGINS=https://myapp.vercel.app
 # Multiple domains (comma-separated)
 CORS_ORIGINS=https://myapp.vercel.app,https://www.myapp.com,https://myapp.com
 
-# During development (include localhost)
-CORS_ORIGINS=https://myapp.vercel.app,http://localhost:3000,http://localhost:19006
+# During development (include 192.168.1.4)
+CORS_ORIGINS=https://myapp.vercel.app,http://192.168.1.4:3000,http://192.168.1.4:19006
 ```
 
 ## 4. ✅ Test Your Setup Locally First
@@ -90,7 +90,7 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/meat-delivery
 JWT_SECRET=your-generated-32-character-secret-key
 JWT_EXPIRE=7d
 NODE_ENV=development
-CORS_ORIGINS=http://localhost:3000
+CORS_ORIGINS=http://192.168.1.4:3000
 ```
 
 **b) Test local server:**
@@ -101,7 +101,7 @@ npm start
 **c) Test endpoints:**
 ```bash
 # Health check
-curl http://localhost:5000/api/health
+curl http://192.168.1.4:5000/api/health
 
 # Should show database as "connected"
 ```

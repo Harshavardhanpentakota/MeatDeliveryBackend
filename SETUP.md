@@ -23,7 +23,7 @@ Create a `.env` file in the project root:
 
 ```env
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/meat-delivery
+MONGODB_URI=mongodb://192.168.1.4:27017/meat-delivery
 JWT_SECRET=your-super-secret-jwt-key-here-change-in-production
 JWT_EXPIRE=7d
 NODE_ENV=development
@@ -36,10 +36,10 @@ NODE_ENV=development
 npm run dev
 ```
 
-The server will start on http://localhost:5000
+The server will start on http://192.168.1.4:5000
 
 ### 4. Test the API
-Visit http://localhost:5000/api/health to check if the server is running.
+Visit http://192.168.1.4:5000/api/health to check if the server is running.
 
 ## Quick API Testing
 
@@ -47,7 +47,7 @@ You can use these curl commands or import them into Postman:
 
 ### 1. Register a new user
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://192.168.1.4:5000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "John",
@@ -66,7 +66,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 
 ### 2. Login
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://192.168.1.4:5000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john@example.com",
@@ -76,12 +76,12 @@ curl -X POST http://localhost:5000/api/auth/login \
 
 ### 3. Get products (no auth required)
 ```bash
-curl http://localhost:5000/api/products
+curl http://192.168.1.4:5000/api/products
 ```
 
 ### 4. Create an admin user (register with role)
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://192.168.1.4:5000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "Admin",
@@ -99,7 +99,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 If you see "Database connection error":
 1. Make sure MongoDB is running on your system
 2. Check if the connection string in .env is correct
-3. For local setup, the default URI is: `mongodb://localhost:27017/meat-delivery`
+3. For local setup, the default URI is: `mongodb://192.168.1.4:27017/meat-delivery`
 
 ### Port Already in Use
 If port 5000 is already in use:

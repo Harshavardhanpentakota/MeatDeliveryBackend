@@ -6,5 +6,5 @@
 - [x] Install Required Extensions - No extensions needed for Node.js backend
 - [x] Compile the Project - Dependencies installed successfully
 - [x] Create and Run Task - Development server task created and running
-- [x] Launch the Project - Server configured to run on localhost:5000
+- [x] Launch the Project - Server configured to run on 192.168.1.4:5000
 - [x] Ensure Documentation is Complete - README.md and SETUP.md created with comprehensive documentation

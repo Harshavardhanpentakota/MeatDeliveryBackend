@@ -7,7 +7,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:5000/api",
+      "value": "http://192.168.1.4:5000/api",
       "type": "string"
     },
     {

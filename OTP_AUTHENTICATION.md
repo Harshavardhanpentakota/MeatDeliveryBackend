@@ -5,7 +5,7 @@ Your Meat Delivery API now supports **OTP-based mobile authentication**! Here's 
 ## 🆕 New Authentication Endpoints
 
 ### 1. Request OTP
-**POST** `http://localhost:5000/api/auth/request-otp`
+**POST** `http://192.168.1.4:5000/api/auth/request-otp`
 
 **Headers:**
 ```
@@ -38,7 +38,7 @@ Content-Type: application/json
 ```
 
 ### 2. Verify OTP & Login
-**POST** `http://localhost:5000/api/auth/verify-otp`
+**POST** `http://192.168.1.4:5000/api/auth/verify-otp`
 
 **Headers:**
 ```
@@ -74,7 +74,7 @@ Content-Type: application/json
 ## 🧪 Complete Testing Workflow
 
 ### Step 1: Register a User
-**POST** `http://localhost:5000/api/auth/register`
+**POST** `http://192.168.1.4:5000/api/auth/register`
 ```json
 {
   "firstName": "John",
@@ -92,7 +92,7 @@ Content-Type: application/json
 ```
 
 ### Step 2: Request OTP for Mobile Login
-**POST** `http://localhost:5000/api/auth/request-otp`
+**POST** `http://192.168.1.4:5000/api/auth/request-otp`
 ```json
 {
   "phone": "+1234567890"
@@ -106,7 +106,7 @@ Look at the server console output - you'll see the OTP printed:
 ```
 
 ### Step 4: Verify OTP and Login
-**POST** `http://localhost:5000/api/auth/verify-otp`
+**POST** `http://192.168.1.4:5000/api/auth/verify-otp`
 ```json
 {
   "phone": "+1234567890",
@@ -148,7 +148,7 @@ Here are the new requests to add to your Postman collection:
 ### Request OTP
 ```
 Method: POST
-URL: http://localhost:5000/api/auth/request-otp
+URL: http://192.168.1.4:5000/api/auth/request-otp
 Headers: Content-Type: application/json
 Body: {"phone": "+1234567890"}
 ```
@@ -156,7 +156,7 @@ Body: {"phone": "+1234567890"}
 ### Verify OTP
 ```
 Method: POST
-URL: http://localhost:5000/api/auth/verify-otp
+URL: http://192.168.1.4:5000/api/auth/verify-otp
 Headers: Content-Type: application/json
 Body: {"phone": "+1234567890", "otp": "123456"}
 Test Script: 

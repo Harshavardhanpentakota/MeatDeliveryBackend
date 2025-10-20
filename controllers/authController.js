@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const { sendTokenResponse } = require('../utils/auth');
 const { asyncHandler, AppError, sendSuccess, sendError } = require('../utils/helpers');
+const notificationService = require('../services/notificationService');
 const { 
   generateOTP, 
   generateOTPExpiry, 
@@ -32,16 +33,41 @@ const register = asyncHandler(async (req, res, next) => {
     return sendError(res, 'User already exists with this email', 400);
   }
 
-  // Create user
-  const user = await User.create({
+  // Prepare user data
+  const userData = {
     firstName,
     lastName,
     email,
     password,
     phone,
-    address,
-    role: role || 'customer'
-  });
+    role: role || 'customer',
+    savedAddresses: []
+  };
+
+  // If address is provided during registration, add it to savedAddresses
+  if (address && address.street && address.city && address.state && address.zipCode) {
+    userData.savedAddresses = [{
+      label: 'Home', // Default label for registration address
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+      country: address.country || 'India',
+      landmark: address.landmark || '',
+      isDefault: true // First address is always default
+    }];
+  }
+
+  // Create user
+  const user = await User.create(userData);
+
+  // Send welcome notification
+  try {
+    await notificationService.sendWelcomeNotification(user._id);
+  } catch (notificationError) {
+    console.error('Failed to send welcome notification:', notificationError);
+    // Don't fail registration if notification fails
+  }
 
   sendTokenResponse(user, 201, res, 'User registered successfully');
 });

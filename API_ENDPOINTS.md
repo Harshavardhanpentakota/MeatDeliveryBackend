@@ -2,9 +2,9 @@
 
 ## 🔗 Base URL
 ```
-Local Development: http://localhost:5000/api
+Local Development: http://192.168.1.4:5000/api
 Android Emulator: http://10.0.2.2:5000/api
-iOS Simulator: http://localhost:5000/api
+iOS Simulator: http://192.168.1.4:5000/api
 Physical Device: http://YOUR_LOCAL_IP:5000/api
 ```
 

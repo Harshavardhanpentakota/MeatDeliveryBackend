@@ -4,6 +4,7 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const { asyncHandler, sendSuccess, sendError, paginate } = require('../utils/helpers');
+const notificationService = require('../services/notificationService');
 
 /**
  * @desc    Create new order
@@ -127,6 +128,18 @@ const createOrder = asyncHandler(async (req, res, next) => {
   await order.populate('customer', 'firstName lastName email phone');
   await order.populate('items.product');
 
+  // Send order placed notification
+  try {
+    await notificationService.notifyOrderPlaced(req.user._id, {
+      orderNumber: order.orderNumber,
+      orderId: order._id,
+      amount: order.pricing.total
+    });
+  } catch (notificationError) {
+    console.error('Failed to send order notification:', notificationError);
+    // Don't fail the order creation if notification fails
+  }
+
   sendSuccess(res, 'Order created successfully', order, 201);
 });
 
@@ -237,6 +250,17 @@ const updateOrderStatus = asyncHandler(async (req, res, next) => {
 
   await order.populate('customer', 'firstName lastName email phone');
   await order.populate('items.product');
+
+  // Send order status change notification
+  try {
+    await notificationService.notifyOrderStatusChange(order.customer._id, {
+      orderNumber: order.orderNumber,
+      orderId: order._id,
+      status: status
+    }, status);
+  } catch (notificationError) {
+    console.error('Failed to send status update notification:', notificationError);
+  }
 
   sendSuccess(res, 'Order status updated successfully', order);
 });

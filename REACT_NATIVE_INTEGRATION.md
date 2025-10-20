@@ -6,9 +6,9 @@ Complete API documentation for integrating your Meat Delivery Backend with React
 
 ```javascript
 // config/api.js
-const API_BASE_URL = 'http://localhost:5000/api'; // Change for production
+const API_BASE_URL = 'http://192.168.1.4:5000/api'; // Change for production
 // For Android Emulator: http://10.0.2.2:5000/api
-// For iOS Simulator: http://localhost:5000/api
+// For iOS Simulator: http://192.168.1.4:5000/api
 // For Physical Device: http://YOUR_LOCAL_IP:5000/api
 
 export default {
@@ -738,7 +738,7 @@ yarn add @react-native-async-storage/async-storage
 
 ### 2. Update API Base URL
 - For Android Emulator: `http://10.0.2.2:5000/api`
-- For iOS Simulator: `http://localhost:5000/api`
+- For iOS Simulator: `http://192.168.1.4:5000/api`
 - For Physical Device: `http://YOUR_LOCAL_IP:5000/api`
 
 ### 3. File Structure

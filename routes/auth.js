@@ -54,8 +54,8 @@ const registerValidation = [
   body('address.zipCode')
     .optional()
     .trim()
-    .isLength({ min: 5, max: 10 })
-    .withMessage('Zip code must be between 5 and 10 characters'),
+    .matches(/^\d{6}$/)
+    .withMessage('Please provide a valid 6-digit PIN code'),
   body('role')
     .optional()
     .isIn(['customer', 'admin'])

@@ -14,6 +14,7 @@ const orderRoutes = require('./routes/orders');
 const cartRoutes = require('./routes/cart');
 const couponRoutes = require('./routes/coupons');
 const addressRoutes = require('./routes/addresses');
+const notificationRoutes = require('./routes/notifications');
 
 // Import middleware
 const errorHandler = require('./middlewares/errorHandler');
@@ -43,6 +44,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
@@ -95,7 +97,7 @@ app.use('*', (req, res) => {
 // Database connection
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meat-delivery';
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://192.168.1.4:27017/meat-delivery';
     console.log('Attempting to connect to MongoDB...');
     console.log(`Connection URI: ${mongoURI.replace(/\/\/.*@/, '//***:***@')}`); // Hide credentials
     
@@ -105,6 +107,7 @@ const connectDB = async () => {
     
   
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    return true;
   } catch (error) {
     console.error('❌ Database connection error:', error.message);
     console.error('\n📋 Troubleshooting steps:');
@@ -114,7 +117,8 @@ const connectDB = async () => {
     console.error('4. Consider using MongoDB Atlas for cloud database');
     console.error('5. Update your .env file with the correct connection string');
     console.error('\n💡 Quick setup: https://www.mongodb.com/try/download/community');
-    process.exit(1);
+    console.error('\n⚠️  Server will start without database connection for route testing...');
+    return false;
   }
 };
 
@@ -123,10 +127,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    await connectDB();
+    const dbConnected = await connectDB();
+    
+    if (!dbConnected) {
+      console.log('⚠️  Starting server without database connection for testing purposes...');
+    }
     
     const server = app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      console.log(`✅ Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      if (!dbConnected) {
+        console.log('⚠️  Note: Database not connected - some routes may not work properly');
+      }
     });
 
     server.on('error', (error) => {

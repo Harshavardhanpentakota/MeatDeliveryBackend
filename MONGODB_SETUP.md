@@ -122,7 +122,7 @@ node server.js
 You should see:
 ```
 Attempting to connect to MongoDB...
-✅ MongoDB Connected: localhost
+✅ MongoDB Connected: 192.168.1.4
 Server running in development mode on port 5000
 ```
 
@@ -130,7 +130,7 @@ Server running in development mode on port 5000
 
 If you installed MongoDB Compass:
 1. Open MongoDB Compass
-2. Connect to: `mongodb://localhost:27017`
+2. Connect to: `mongodb://192.168.1.4:27017`
 3. You should see your `meat-delivery` database after running the server
 
 ## Need Help?
