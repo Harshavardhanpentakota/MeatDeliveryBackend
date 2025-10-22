@@ -5,10 +5,14 @@ A comprehensive RESTful backend for a meat delivery application built with Node.
 ## Features
 
 - **User Authentication & Authorization**
-  - JWT-based authentication
-  - Role-based access control (Admin/Customer)
-  - Secure password hashing with bcrypt
-  - User registration, login, and profile management
+  - **6-digit PIN authentication** for mobile-first experience
+  - **JWT-based tokens** with configurable expiration
+  - **Multiple login methods**: PIN, OTP, Email verification
+  - **Role-based access control** (Admin/Customer)
+  - **Secure PIN storage** with bcrypt encryption
+  - **Account lockout protection** after failed attempts
+  - **Email/Phone verification** with professional templates
+  - **PIN reset system** via OTP verification
 
 - **Product Management**
   - CRUD operations for meat products

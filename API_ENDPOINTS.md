@@ -10,7 +10,7 @@ Physical Device: http://YOUR_LOCAL_IP:5000/api
 
 ## 🔐 Authentication Endpoints
 
-### 1. Register User
+### 1. Register User (PIN-Based)
 **POST** `/auth/register`
 
 **Request Body:**
@@ -19,7 +19,7 @@ Physical Device: http://YOUR_LOCAL_IP:5000/api
   "firstName": "John",
   "lastName": "Doe",
   "email": "john@example.com",
-  "password": "Password123",
+  "pin": "123456",
   "phone": "+1234567890",
   "address": {
     "street": "123 Main St",
@@ -32,11 +32,18 @@ Physical Device: http://YOUR_LOCAL_IP:5000/api
 }
 ```
 
+**Required Fields:**
+- `firstName` (2-50 characters)
+- `lastName` (2-50 characters)
+- `email` (valid email format)
+- `pin` (exactly 6 digits)
+- `phone` (valid phone number)
+
 **Response:**
 ```json
 {
   "success": true,
-  "message": "User registered successfully",
+  "message": "User registered successfully with PIN",
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
     "_id": "671234567890abcdef123456",
@@ -47,6 +54,7 @@ Physical Device: http://YOUR_LOCAL_IP:5000/api
     "role": "customer",
     "isActive": true,
     "phoneVerified": false,
+    "emailVerified": false,
     "fullName": "John Doe"
   }
 }
@@ -196,6 +204,70 @@ Physical Device: http://YOUR_LOCAL_IP:5000/api
 ### 8. Logout
 **POST** `/auth/logout`
 **Headers:** `Authorization: Bearer TOKEN`
+
+### 9. Login with PIN
+**POST** `/auth/login-pin`
+
+**Request Body:**
+```json
+{
+  "identifier": "john@example.com", // Can be email or phone
+  "pin": "123456"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "671234567890abcdef123456",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@example.com",
+    "phone": "+1234567890",
+    "role": "customer",
+    "lastLogin": "2024-10-13T10:30:00.000Z"
+  }
+}
+```
+
+### 10. Set PIN (First Time or Change)
+**POST** `/auth/set-pin`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Request Body:**
+```json
+{
+  "pin": "123456",
+  "confirmPin": "123456"
+}
+```
+
+### 11. Forgot PIN (Request OTP)
+**POST** `/auth/forgot-pin`
+
+**Request Body:**
+```json
+{
+  "identifier": "john@example.com" // Can be email or phone
+}
+```
+
+### 12. Reset PIN with OTP
+**POST** `/auth/reset-pin`
+
+**Request Body:**
+```json
+{
+  "identifier": "john@example.com",
+  "otp": "123456",
+  "newPin": "654321",
+  "confirmPin": "654321"
+}
+```
 
 ## 🛍️ Products Endpoints
 
@@ -652,6 +724,177 @@ All error responses follow this format:
 {
   "success": false,
   "message": "Error description"
+}
+```
+
+## 📍 Address Endpoints
+
+### 1. Get All Saved Addresses
+**GET** `/addresses`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Response:**
+```json
+{
+  "success": true,
+  "addresses": [
+    {
+      "_id": "address_id_1",
+      "label": "Home",
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10001",
+      "country": "USA",
+      "landmark": "Near Central Park",
+      "isDefault": true,
+      "coordinates": {
+        "latitude": 40.7589,
+        "longitude": -73.9851
+      }
+    },
+    {
+      "_id": "address_id_2",
+      "label": "Office",
+      "street": "456 Business Ave",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10002",
+      "country": "USA",
+      "landmark": "Next to Starbucks",
+      "isDefault": false,
+      "coordinates": {
+        "latitude": 40.7505,
+        "longitude": -73.9934
+      }
+    }
+  ],
+  "count": 2
+}
+```
+
+### 2. Get Default Address
+**GET** `/addresses/default`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Response:**
+```json
+{
+  "success": true,
+  "address": {
+    "_id": "address_id_1",
+    "label": "Home",
+    "street": "123 Main St",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10001",
+    "country": "USA",
+    "landmark": "Near Central Park",
+    "isDefault": true,
+    "coordinates": {
+      "latitude": 40.7589,
+      "longitude": -73.9851
+    }
+  }
+}
+```
+
+### 3. Add New Address
+**POST** `/addresses`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Request Body:**
+```json
+{
+  "label": "Office",
+  "street": "456 Business Ave",
+  "city": "New York", 
+  "state": "NY",
+  "zipCode": "10002",
+  "landmark": "Next to Starbucks",
+  "isDefault": false,
+  "coordinates": {
+    "latitude": 40.7505,
+    "longitude": -73.9934
+  }
+}
+```
+
+**Required Fields:**
+- `label` (1-50 characters, alphanumeric + spaces/hyphens/underscores)
+- `street` (5-200 characters)
+- `city` (2-50 characters, letters only)
+- `state` (2-50 characters, letters only)
+- `zipCode` (6-digit PIN code)
+
+**Optional Fields:**
+- `landmark` (max 100 characters)
+- `isDefault` (boolean, defaults to false)
+- `coordinates.latitude` (-90 to 90)
+- `coordinates.longitude` (-180 to 180)
+
+### 4. Update Address
+**PUT** `/addresses/:addressId`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Request Body:** Same as Add New Address
+
+### 5. Delete Address
+**DELETE** `/addresses/:addressId`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Address deleted successfully",
+  "addresses": [...] // Updated list of remaining addresses
+}
+```
+
+### 6. Set Address as Default ⭐
+**PATCH** `/addresses/:addressId/default`
+**Headers:** `Authorization: Bearer TOKEN`
+
+**Description:** This is the "Make This Default" functionality for your mobile app!
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Default address updated successfully",
+  "addresses": [
+    {
+      "_id": "address_id_2",
+      "label": "Office",
+      "street": "456 Business Ave",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10002", 
+      "country": "USA",
+      "landmark": "Next to Starbucks",
+      "isDefault": true, // ✅ Now set as default
+      "coordinates": {
+        "latitude": 40.7505,
+        "longitude": -73.9934
+      }
+    },
+    {
+      "_id": "address_id_1", 
+      "label": "Home",
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "10001",
+      "country": "USA",
+      "landmark": "Near Central Park",
+      "isDefault": false, // ❌ No longer default
+      "coordinates": {
+        "latitude": 40.7589,
+        "longitude": -73.9851
+      }
+    }
+  ]
 }
 ```
 

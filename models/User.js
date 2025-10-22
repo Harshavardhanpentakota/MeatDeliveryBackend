@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: false, // Make password optional since we're using PIN
     minlength: [6, 'Password must be at least 6 characters'],
     select: false // Don't include password in queries by default
   },
@@ -123,6 +123,50 @@ const userSchema = new mongoose.Schema({
   phoneVerified: {
     type: Boolean,
     default: false
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  // PIN fields for secure authentication
+  pin: {
+    type: String,
+    required: [true, 'PIN is required'],
+    validate: {
+      validator: function(value) {
+        // Only validate if PIN is not hashed (doesn't start with $2a$ or $2b$)
+        if (value && value.startsWith('$2')) {
+          return true; // Skip validation for hashed PINs
+        }
+        // Validate original PIN format
+        return /^\d{6}$/.test(value);
+      },
+      message: 'PIN must be exactly 6 digits'
+    },
+    select: false // Don't include PIN in queries by default
+  },
+  pinAttempts: {
+    type: Number,
+    default: 0,
+    select: false
+  },
+  pinLockedUntil: {
+    type: Date,
+    select: false
+  },
+  // PIN reset fields
+  pinResetOTP: {
+    type: String,
+    select: false
+  },
+  pinResetOTPExpires: {
+    type: Date,
+    select: false
+  },
+  pinResetOTPAttempts: {
+    type: Number,
+    default: 0,
+    select: false
   }
 }, {
   timestamps: true
@@ -130,13 +174,21 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') && !this.isModified('pin')) {
     return next();
   }
   
   try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
+    if (this.isModified('password')) {
+      const salt = await bcrypt.genSalt(12);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+    
+    if (this.isModified('pin')) {
+      const salt = await bcrypt.genSalt(12);
+      this.pin = await bcrypt.hash(this.pin, salt);
+    }
+    
     next();
   } catch (error) {
     next(error);
@@ -166,6 +218,29 @@ userSchema.pre('save', function(next) {
 // Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Compare PIN method
+userSchema.methods.comparePin = async function(candidatePin) {
+  if (!this.pin) return false;
+  return await bcrypt.compare(candidatePin, this.pin);
+};
+
+// Check if PIN is locked
+userSchema.methods.isPinLocked = function() {
+  return this.pinLockedUntil && this.pinLockedUntil > Date.now();
+};
+
+// Lock PIN for 30 minutes after 5 failed attempts
+userSchema.methods.lockPin = function() {
+  this.pinAttempts = 5;
+  this.pinLockedUntil = Date.now() + 30 * 60 * 1000; // 30 minutes
+};
+
+// Reset PIN attempts
+userSchema.methods.resetPinAttempts = function() {
+  this.pinAttempts = 0;
+  this.pinLockedUntil = undefined;
 };
 
 // Get full name virtual

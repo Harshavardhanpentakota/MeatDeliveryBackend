@@ -3,6 +3,10 @@ const { body } = require('express-validator');
 const {
   register,
   login,
+  loginWithPin,
+  setPin,
+  forgotPin,
+  resetPin,
   requestOTP,
   verifyOTPLogin,
   getMe,
@@ -28,11 +32,10 @@ const registerValidation = [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email'),
-  body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+  body('pin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('PIN must be exactly 6 digits'),
   body('phone')
     .matches(/^\+?[1-9]\d{1,14}$/)
     .withMessage('Please provide a valid phone number'),
@@ -73,15 +76,33 @@ const loginValidation = [
 ];
 
 const requestOTPValidation = [
-  body('phone')
-    .matches(/^\+?[1-9]\d{1,14}$/)
-    .withMessage('Please provide a valid phone number')
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or phone number is required')
+    .custom((value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+      
+      if (!emailRegex.test(value) && !phoneRegex.test(value)) {
+        throw new Error('Please provide a valid email or phone number');
+      }
+      return true;
+    })
 ];
 
 const verifyOTPValidation = [
-  body('phone')
-    .matches(/^\+?[1-9]\d{1,14}$/)
-    .withMessage('Please provide a valid phone number'),
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or phone number is required')
+    .custom((value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+      
+      if (!emailRegex.test(value) && !phoneRegex.test(value)) {
+        throw new Error('Please provide a valid email or phone number');
+      }
+      return true;
+    }),
   body('otp')
     .isLength({ min: 6, max: 6 })
     .isNumeric()
@@ -136,9 +157,60 @@ const changePasswordValidation = [
     .withMessage('New password must contain at least one uppercase letter, one lowercase letter, and one number')
 ];
 
+// PIN-based authentication validations
+const loginPinValidation = [
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or phone number is required'),
+  body('pin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('PIN must be exactly 6 digits')
+];
+
+const setPinValidation = [
+  body('pin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('PIN must be exactly 6 digits'),
+  body('confirmPin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('Confirm PIN must be exactly 6 digits')
+];
+
+const forgotPinValidation = [
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or phone number is required')
+];
+
+const resetPinValidation = [
+  body('identifier')
+    .notEmpty()
+    .withMessage('Email or phone number is required'),
+  body('otp')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('OTP must be 6 digits'),
+  body('newPin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('New PIN must be exactly 6 digits'),
+  body('confirmPin')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('Confirm PIN must be exactly 6 digits')
+];
+
 // Public routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
+
+// PIN-based authentication routes
+router.post('/login-pin', loginPinValidation, loginWithPin);
+router.post('/forgot-pin', forgotPinValidation, forgotPin);
+router.post('/reset-pin', resetPinValidation, resetPin);
 
 // OTP-based authentication routes
 router.post('/request-otp', requestOTPValidation, requestOTP);
@@ -148,6 +220,7 @@ router.post('/verify-otp', verifyOTPValidation, verifyOTPLogin);
 router.get('/me', authenticate, getMe);
 router.put('/me', authenticate, updateProfileValidation, updateProfile);
 router.put('/change-password', authenticate, changePasswordValidation, changePassword);
+router.post('/set-pin', authenticate, setPinValidation, setPin);
 router.post('/logout', authenticate, logout);
 
 module.exports = router;
