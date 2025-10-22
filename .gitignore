@@ -1,6 +1,8 @@
+# Expo local state
+.expo/
 # Environment Variables
 .env
-
+.vscode
 # Logs
 logs
 *.log
