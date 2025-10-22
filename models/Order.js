@@ -160,7 +160,8 @@ orderSchema.index({ status: 1 });
 
 // Virtual for formatted order total
 orderSchema.virtual('formattedTotal').get(function() {
-  return `₹${this.pricing.total.toFixed(2)}`;
+  const total = this.pricing && typeof this.pricing.total === 'number' ? this.pricing.total : 0;
+  return `₹${total.toFixed(2)}`;
 });
 
 // Ensure virtual fields are serialized
