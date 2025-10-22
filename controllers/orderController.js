@@ -76,11 +76,9 @@ const createOrder = asyncHandler(async (req, res, next) => {
     subtotal += itemSubtotal;
   }
 
-  // Calculate delivery fee and tax
+  // Calculate delivery fee (no tax)
   const deliveryFee = subtotal > 500 ? 0 : 50; // Free delivery above ₹500
-  const taxRate = 0.05; // 5% tax
-  const tax = subtotal * taxRate;
-  const total = subtotal + deliveryFee + tax;
+  const total = subtotal + deliveryFee;
 
   // Create order - use provided orderNumber or let pre-save middleware generate it
   const orderData = {
@@ -91,7 +89,6 @@ const createOrder = asyncHandler(async (req, res, next) => {
     pricing: {
       subtotal,
       deliveryFee,
-      tax,
       total
     },
     paymentInfo: {

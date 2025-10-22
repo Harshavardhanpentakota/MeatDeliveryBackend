@@ -526,15 +526,13 @@ const updateProfile = asyncHandler(async (req, res, next) => {
     return sendError(res, errors.array()[0].msg, 400);
   }
 
-  const { firstName, lastName, phone, address } = req.body;
+  const { firstName, lastName } = req.body;
 
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       firstName,
-      lastName,
-      phone,
-      address
+      lastName
     },
     {
       new: true,
