@@ -11,6 +11,7 @@ const {
 const { authenticate, authorize, ownerOrAdmin } = require('../middlewares/auth');
 
 const router = express.Router();
+const { savePushToken } = require('../controllers/pushTokenController');
 
 // Validation rules
 const updateUserValidation = [
@@ -65,6 +66,9 @@ const updateUserValidation = [
 
 // All user routes require authentication
 router.use(authenticate);
+
+// Expo push token registration
+router.post('/push-token', savePushToken);
 
 // Routes
 router.get('/', authorize('admin'), getUsers);

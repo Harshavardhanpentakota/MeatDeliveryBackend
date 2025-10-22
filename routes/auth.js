@@ -119,31 +119,7 @@ const updateProfileValidation = [
     .optional()
     .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Last name must be between 2 and 50 characters'),
-  body('phone')
-    .optional()
-    .matches(/^\+?[1-9]\d{1,14}$/)
-    .withMessage('Please provide a valid phone number'),
-  body('address.street')
-    .optional()
-    .trim()
-    .isLength({ min: 5 })
-    .withMessage('Street address must be at least 5 characters'),
-  body('address.city')
-    .optional()
-    .trim()
-    .isLength({ min: 2 })
-    .withMessage('City must be at least 2 characters'),
-  body('address.state')
-    .optional()
-    .trim()
-    .isLength({ min: 2 })
-    .withMessage('State must be at least 2 characters'),
-  body('address.zipCode')
-    .optional()
-    .trim()
-    .isLength({ min: 5, max: 10 })
-    .withMessage('Zip code must be between 5 and 10 characters')
+    .withMessage('Last name must be between 2 and 50 characters')
 ];
 
 const changePasswordValidation = [

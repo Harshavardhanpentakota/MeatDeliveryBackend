@@ -2,6 +2,15 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
+  pushToken: {
+    type: String,
+    default: null
+  },
+  pushPlatform: {
+    type: String,
+    enum: ['android', 'ios', 'web', null],
+    default: null
+  },
   firstName: {
     type: String,
     required: [true, 'First name is required'],
