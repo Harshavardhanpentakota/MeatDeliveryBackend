@@ -15,6 +15,7 @@ const cartRoutes = require('./routes/cart');
 const couponRoutes = require('./routes/coupons');
 const addressRoutes = require('./routes/addresses');
 const notificationRoutes = require('./routes/notifications');
+const deliveryRoutes = require('./routes/delivery');
 
 // Import middleware
 const errorHandler = require('./middlewares/errorHandler');
@@ -45,6 +46,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/delivery', deliveryRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

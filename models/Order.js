@@ -108,7 +108,7 @@ const orderSchema = new mongoose.Schema({
   delivery: {
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'DeliveryBoy'
     },
     estimatedTime: Date,
     actualDeliveryTime: Date,

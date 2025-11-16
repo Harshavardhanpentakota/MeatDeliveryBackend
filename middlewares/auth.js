@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const DeliveryBoy = require('../models/DeliveryBoy');
 
 /**
  * Middleware to authenticate JWT token
@@ -23,25 +24,52 @@ const authenticate = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key');
     
-    // Get user from database
-    const user = await User.findById(decoded.id).select('-password');
-    
-    if (!user) {
+    // Try to load as regular User first
+    let user = await User.findById(decoded.id).select('-password');
+
+    if (user) {
+      if (!user.isActive) {
+        return res.status(401).json({
+          success: false,
+          message: 'Account is deactivated'
+        });
+      }
+
+      // Add user to request object
+      req.user = user;
+      return next();
+    }
+
+    // If not a regular user, try DeliveryBoy
+    const deliveryBoy = await DeliveryBoy.findById(decoded.id).select('-password');
+
+    if (!deliveryBoy) {
       return res.status(401).json({
         success: false,
         message: 'Token is not valid - user not found'
       });
     }
 
-    if (!user.isActive) {
-      return res.status(401).json({
+    // Check delivery boy approval/status
+    if (deliveryBoy.status === 'suspended') {
+      return res.status(403).json({
         success: false,
-        message: 'Account is deactivated'
+        message: 'Account has been suspended'
       });
     }
 
-    // Add user to request object
-    req.user = user;
+    if (!deliveryBoy.isApproved) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account not approved by admin'
+      });
+    }
+
+    // Normalize role so downstream code can rely on a role property
+    const deliveryUser = deliveryBoy.toObject();
+    deliveryUser.role = 'delivery';
+
+    req.user = deliveryUser;
     next();
   } catch (error) {
     console.error('Authentication error:', error);

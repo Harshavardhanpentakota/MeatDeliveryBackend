@@ -1,0 +1,390 @@
+// Postman Collection Examples for Delivery Boy API
+// Import these into Postman for easy testing
+
+{
+  "info": {
+    "name": "Delivery Boy API",
+    "description": "Complete API collection for Meat Delivery Delivery Boy System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Delivery Boy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('delivery_token', jsonData.token);",
+                  "    pm.environment.set('delivery_boy_id', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.delivery@example.com\",\n  \"password\": \"SecurePass123\",\n  \"phone\": \"+919876543210\",\n  \"licenseNumber\": \"DL1234567890\",\n  \"licenseExpiryDate\": \"2026-12-31\",\n  \"vehicleType\": \"two-wheeler\",\n  \"vehicleRegistration\": \"DL01AB1234\",\n  \"vehicleModel\": \"Honda Activa\",\n  \"address\": \"123 Main Street\",\n  \"city\": \"Delhi\",\n  \"state\": \"Delhi\",\n  \"zipCode\": \"110001\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Delivery Boy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('delivery_token', jsonData.token);",
+                  "    pm.environment.set('delivery_boy_id', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.delivery@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout Delivery Boy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/logout",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/me",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Availability - Available",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability\": \"available\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/availability",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "availability"]
+            }
+          }
+        },
+        {
+          "name": "Update Availability - Busy",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability\": \"busy\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/availability",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "availability"]
+            }
+          }
+        },
+        {
+          "name": "Update Availability - Offline",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability\": \"offline\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/availability",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "availability"]
+            }
+          }
+        },
+        {
+          "name": "Update Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 28.6139,\n  \"longitude\": 77.2090\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/location",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "location"]
+            }
+          }
+        },
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/stats",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Get Pending Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/orders/pending",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "orders", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Get Assigned Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/orders/assigned",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "orders", "assigned"]
+            }
+          }
+        },
+        {
+          "name": "Accept Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('current_order_id', jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/orders/{{order_id}}/accept",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "orders", "{{order_id}}", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Mark Out For Delivery",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Picked up from store, heading to delivery location\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/orders/{{order_id}}/out-for-delivery",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "orders", "{{order_id}}", "out-for-delivery"]
+            }
+          }
+        },
+        {
+          "name": "Mark Delivered",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{delivery_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Delivered in good condition\",\n  \"otp\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/delivery/orders/{{order_id}}/delivered",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "delivery", "orders", "{{order_id}}", "delivered"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
