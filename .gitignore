@@ -103,8 +103,6 @@ public
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# Uploads directory (if storing files locally)
-uploads/
 
 # OS generated files
 .DS_Store
