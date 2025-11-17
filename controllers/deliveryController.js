@@ -212,8 +212,22 @@ const updateLocation = asyncHandler(async (req, res, next) => {
  * @access  Private (Delivery Boy only)
  */
 const getPendingOrders = asyncHandler(async (req, res, next) => {
+  // Get start of yesterday (00:00:00)
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
+  // Get end of today (23:59:59)
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
   const orders = await Order.find({
-    status: { $in: ['confirmed', 'preparing'] }
+    status: 'pending',
+    'delivery.assignedTo': { $exists: false },
+    createdAt: {
+      $gte: yesterday,
+      $lte: endOfToday
+    }
   })
     .populate('customer', 'firstName lastName email phone')
     .populate('items.product', 'name category price')
@@ -240,14 +254,19 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
     return sendError(res, 'Order not found', 404);
   }
 
-  if (order.status !== 'confirmed' && order.status !== 'preparing') {
-    return sendError(res, 'Order cannot be accepted in current status', 400);
+  // Check if order is pending and not already assigned
+  if (order.status !== 'pending') {
+    return sendError(res, 'Order is not available for assignment', 400);
   }
 
-  // Check if delivery boy is already on another delivery
+  if (order.delivery.assignedTo) {
+    return sendError(res, 'Order is already assigned to another delivery boy', 400);
+  }
+
+  // Check if delivery boy is already on another active delivery
   const activeDelivery = await Order.findOne({
     'delivery.assignedTo': req.user.id,
-    status: { $in: ['out-for-delivery'] }
+    status: { $in: ['confirmed', 'preparing', 'out-for-delivery'] }
   });
 
   if (activeDelivery) {
@@ -257,13 +276,13 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
   // Update order with delivery boy assignment
   order.delivery.assignedTo = req.user.id;
   order.delivery.estimatedTime = new Date(Date.now() + 45 * 60000); // 45 minutes estimated
-  order.status = 'out-for-delivery';
+  order.status = 'confirmed';
 
   // Add to status history
   order.statusHistory.push({
-    status: 'out-for-delivery',
+    status: 'confirmed',
     updatedBy: req.user.id,
-    notes: 'Order accepted by delivery boy'
+    notes: 'Order assigned to delivery boy'
   });
 
   await order.save();
@@ -273,9 +292,10 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
 
   const populatedOrder = await Order.findById(orderId)
     .populate('customer', 'firstName lastName email phone')
-    .populate('delivery.assignedTo', 'firstName lastName phone');
+    .populate('delivery.assignedTo', 'firstName lastName phone')
+    .populate('items.product', 'name category price');
 
-  sendSuccess(res, populatedOrder, 'Order accepted successfully');
+  sendSuccess(res, populatedOrder, 'Order assigned successfully');
 });
 
 /**
@@ -286,7 +306,7 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
 const getAssignedOrders = asyncHandler(async (req, res, next) => {
   const orders = await Order.find({
     'delivery.assignedTo': req.user.id,
-    status: { $in: ['out-for-delivery', 'delivered'] }
+    status: { $in: ['confirmed', 'preparing', 'out-for-delivery', 'delivered'] }
   })
     .populate('customer', 'firstName lastName email phone')
     .populate('items.product', 'name category price')
