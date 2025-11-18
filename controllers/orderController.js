@@ -189,17 +189,31 @@ const getOrder = asyncHandler(async (req, res, next) => {
   let query = Order.findById(req.params.id)
     .populate('customer', 'firstName lastName email phone')
     .populate('items.product')
+    .populate('delivery.assignedTo', 'firstName lastName phone')
     .populate('statusHistory.updatedBy', 'firstName lastName');
-
-  // If not admin, ensure user can only access their own orders
-  if (req.user.role !== 'admin') {
-    query = query.where('customer').equals(req.user._id);
-  }
 
   const order = await query;
 
   if (!order) {
     return sendError(res, 'Order not found', 404);
+  }
+
+  // Authorization check
+  // Admin can access any order
+  // Customer can access their own orders
+  // Delivery boy can access orders assigned to them
+  if (req.user.role === 'admin') {
+    // Admin can view any order
+  } else if (req.user.role === 'delivery') {
+    // Delivery boy can only view orders assigned to them
+    if (!order.delivery.assignedTo || order.delivery.assignedTo._id.toString() !== req.user._id.toString()) {
+      return sendError(res, 'Order not found', 404);
+    }
+  } else {
+    // Customer can only view their own orders
+    if (order.customer._id.toString() !== req.user._id.toString()) {
+      return sendError(res, 'Order not found', 404);
+    }
   }
 
   sendSuccess(res, 'Order retrieved successfully', order);

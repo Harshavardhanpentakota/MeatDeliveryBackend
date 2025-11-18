@@ -338,9 +338,13 @@ const markOutForDelivery = asyncHandler(async (req, res, next) => {
     return sendError(res, 'You are not assigned to this order', 403);
   }
 
-  if (order.status !== 'out-for-delivery') {
-    return sendError(res, 'Order is not in out-for-delivery status', 400);
+  // Order should be confirmed or preparing to be marked as out-for-delivery
+  if (!['confirmed', 'preparing'].includes(order.status)) {
+    return sendError(res, `Order cannot be marked as out-for-delivery from ${order.status} status`, 400);
   }
+
+  // Update order status
+  order.status = 'out-for-delivery';
 
   // Add status history entry
   order.statusHistory.push({
@@ -353,7 +357,8 @@ const markOutForDelivery = asyncHandler(async (req, res, next) => {
 
   const populatedOrder = await Order.findById(orderId)
     .populate('customer', 'firstName lastName email phone')
-    .populate('delivery.assignedTo', 'firstName lastName phone');
+    .populate('delivery.assignedTo', 'firstName lastName phone')
+    .populate('items.product', 'name category price');
 
   sendSuccess(res, populatedOrder, 'Order marked as out for delivery');
 });
