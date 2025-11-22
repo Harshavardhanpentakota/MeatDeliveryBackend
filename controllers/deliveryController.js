@@ -137,13 +137,67 @@ const login = asyncHandler(async (req, res, next) => {
  * @access  Private (Delivery Boy only)
  */
 const getMe = asyncHandler(async (req, res, next) => {
-  const deliveryBoy = await DeliveryBoy.findById(req.user.id);
+  const deliveryBoy = await DeliveryBoy.findById(req.user._id);
 
   if (!deliveryBoy) {
     return sendError(res, 'Delivery boy not found', 404);
   }
 
-  sendSuccess(res, deliveryBoy, 'Profile retrieved successfully');
+  // Calculate total earnings from delivered orders
+  const deliveredOrders = await Order.find({
+    'delivery.assignedTo': req.user._id,
+    status: 'delivered'
+  }).select('pricing.total');
+
+  const totalEarnings = deliveredOrders.reduce((sum, order) => {
+    // Assuming delivery boy gets 10% of order total as commission
+    return sum + (order.pricing.total * 0.10);
+  }, 0);
+
+  // Calculate completion rate
+  const totalAssigned = deliveryBoy.totalDeliveries || 0;
+  const completed = deliveryBoy.completedDeliveries || 0;
+  const completionRate = totalAssigned > 0 ? ((completed / totalAssigned) * 100).toFixed(1) : 100;
+
+  // Format response with all profile data
+  const profileData = {
+    _id: deliveryBoy._id,
+    name: `${deliveryBoy.firstName} ${deliveryBoy.lastName}`,
+    firstName: deliveryBoy.firstName,
+    lastName: deliveryBoy.lastName,
+    email: deliveryBoy.email,
+    phone: deliveryBoy.phone,
+    address: deliveryBoy.address.street || '',
+    city: deliveryBoy.address.city || '',
+    state: deliveryBoy.address.state || '',
+    zipCode: deliveryBoy.address.zipCode || '',
+    fullAddress: `${deliveryBoy.address.street || ''}, ${deliveryBoy.address.city || ''}, ${deliveryBoy.address.state || ''} ${deliveryBoy.address.zipCode || ''}`.trim(),
+    joinDate: deliveryBoy.joinDate,
+    vehicleType: deliveryBoy.vehicle.type,
+    vehicleNumber: deliveryBoy.vehicle.registrationNumber,
+    vehicleModel: deliveryBoy.vehicle.model,
+    licenseNumber: deliveryBoy.license.number,
+    licenseExpiry: deliveryBoy.license.expiryDate,
+    bankAccount: deliveryBoy.bankDetails.accountNumber ? `****${deliveryBoy.bankDetails.accountNumber.slice(-4)}` : null,
+    bankName: deliveryBoy.bankDetails.bankName,
+    ifscCode: deliveryBoy.bankDetails.ifscCode,
+    accountHolder: deliveryBoy.bankDetails.accountHolder,
+    totalDeliveries: deliveryBoy.totalDeliveries || 0,
+    completedDeliveries: deliveryBoy.completedDeliveries || 0,
+    totalEarnings: Math.round(totalEarnings * 100) / 100,
+    averageRating: deliveryBoy.rating || 4.5,
+    averageDeliveryTime: deliveryBoy.averageDeliveryTime || 0,
+    completionRate: parseFloat(completionRate),
+    status: deliveryBoy.status,
+    availability: deliveryBoy.availability,
+    isVerified: deliveryBoy.isVerified,
+    isApproved: deliveryBoy.isApproved,
+    lastActive: deliveryBoy.lastActive,
+    profilePhoto: deliveryBoy.documents.profilePhoto,
+    location: deliveryBoy.location
+  };
+
+  sendSuccess(res, 'Profile retrieved successfully', profileData);
 });
 
 /**
@@ -159,7 +213,7 @@ const updateAvailability = asyncHandler(async (req, res, next) => {
   }
 
   const deliveryBoy = await DeliveryBoy.findByIdAndUpdate(
-    req.user.id,
+    req.user._id,
     { availability },
     { new: true, runValidators: true }
   );
@@ -168,7 +222,7 @@ const updateAvailability = asyncHandler(async (req, res, next) => {
     return sendError(res, 'Delivery boy not found', 404);
   }
 
-  sendSuccess(res, deliveryBoy, 'Availability updated successfully');
+  sendSuccess(res, 'Availability updated successfully', deliveryBoy);
 });
 
 /**
@@ -188,7 +242,7 @@ const updateLocation = asyncHandler(async (req, res, next) => {
   }
 
   const deliveryBoy = await DeliveryBoy.findByIdAndUpdate(
-    req.user.id,
+    req.user._id,
     {
       location: {
         type: 'Point',
@@ -203,7 +257,7 @@ const updateLocation = asyncHandler(async (req, res, next) => {
     return sendError(res, 'Delivery boy not found', 404);
   }
 
-  sendSuccess(res, deliveryBoy, 'Location updated successfully');
+  sendSuccess(res, 'Location updated successfully', deliveryBoy);
 });
 
 /**
@@ -234,10 +288,10 @@ const getPendingOrders = asyncHandler(async (req, res, next) => {
     .sort({ createdAt: -1 });
 
   if (!orders || orders.length === 0) {
-    return sendSuccess(res, [], 'No pending orders available');
+    return sendSuccess(res, 'No pending orders available', []);
   }
 
-  sendSuccess(res, orders, 'Pending orders retrieved successfully');
+  sendSuccess(res, 'Pending orders retrieved successfully', orders);
 });
 
 /**
@@ -265,7 +319,7 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
 
   // Check if delivery boy is already on another active delivery
   const activeDelivery = await Order.findOne({
-    'delivery.assignedTo': req.user.id,
+    'delivery.assignedTo': req.user._id,
     status: { $in: ['confirmed', 'preparing', 'out-for-delivery'] }
   });
 
@@ -274,28 +328,28 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
   }
 
   // Update order with delivery boy assignment
-  order.delivery.assignedTo = req.user.id;
+  order.delivery.assignedTo = req.user._id;
   order.delivery.estimatedTime = new Date(Date.now() + 45 * 60000); // 45 minutes estimated
   order.status = 'confirmed';
 
   // Add to status history
   order.statusHistory.push({
     status: 'confirmed',
-    updatedBy: req.user.id,
+    updatedBy: req.user._id,
     notes: 'Order assigned to delivery boy'
   });
 
   await order.save();
 
   // Update delivery boy availability
-  await DeliveryBoy.findByIdAndUpdate(req.user.id, { availability: 'busy' });
+  await DeliveryBoy.findByIdAndUpdate(req.user._id, { availability: 'busy' });
 
   const populatedOrder = await Order.findById(orderId)
     .populate('customer', 'firstName lastName email phone')
     .populate('delivery.assignedTo', 'firstName lastName phone')
     .populate('items.product', 'name category price');
 
-  sendSuccess(res, populatedOrder, 'Order assigned successfully');
+  sendSuccess(res, 'Order assigned successfully', populatedOrder);
 });
 
 /**
@@ -304,19 +358,20 @@ const acceptOrder = asyncHandler(async (req, res, next) => {
  * @access  Private (Delivery Boy only)
  */
 const getAssignedOrders = asyncHandler(async (req, res, next) => {
+  // Only return active orders (not delivered or cancelled)
   const orders = await Order.find({
-    'delivery.assignedTo': req.user.id,
-    status: { $in: ['confirmed', 'preparing', 'out-for-delivery', 'delivered'] }
+    'delivery.assignedTo': req.user._id,
+    status: { $in: ['confirmed', 'preparing', 'out-for-delivery'] }
   })
     .populate('customer', 'firstName lastName email phone')
     .populate('items.product', 'name category price')
     .sort({ createdAt: -1 });
 
   if (!orders || orders.length === 0) {
-    return sendSuccess(res, [], 'No assigned orders');
+    return sendSuccess(res, 'No assigned orders', []);
   }
 
-  sendSuccess(res, orders, 'Assigned orders retrieved successfully');
+  sendSuccess(res, 'Assigned orders retrieved successfully', orders);
 });
 
 /**
@@ -334,7 +389,7 @@ const markOutForDelivery = asyncHandler(async (req, res, next) => {
     return sendError(res, 'Order not found', 404);
   }
 
-  if (!order.delivery.assignedTo || order.delivery.assignedTo.toString() !== req.user.id) {
+  if (!order.delivery.assignedTo || order.delivery.assignedTo.toString() !== req.user._id.toString()) {
     return sendError(res, 'You are not assigned to this order', 403);
   }
 
@@ -349,7 +404,7 @@ const markOutForDelivery = asyncHandler(async (req, res, next) => {
   // Add status history entry
   order.statusHistory.push({
     status: 'out-for-delivery',
-    updatedBy: req.user.id,
+    updatedBy: req.user._id,
     notes: notes || 'Started delivery'
   });
 
@@ -360,7 +415,7 @@ const markOutForDelivery = asyncHandler(async (req, res, next) => {
     .populate('delivery.assignedTo', 'firstName lastName phone')
     .populate('items.product', 'name category price');
 
-  sendSuccess(res, populatedOrder, 'Order marked as out for delivery');
+  sendSuccess(res, 'Order marked as out for delivery', populatedOrder);
 });
 
 /**
@@ -378,12 +433,23 @@ const markDelivered = asyncHandler(async (req, res, next) => {
     return sendError(res, 'Order not found', 404);
   }
 
-  if (!order.delivery.assignedTo || order.delivery.assignedTo.toString() !== req.user.id) {
+  if (!order.delivery.assignedTo || order.delivery.assignedTo.toString() !== req.user._id.toString()) {
     return sendError(res, 'You are not assigned to this order', 403);
   }
 
+  // Allow marking as delivered from confirmed, preparing, or out-for-delivery status
+  if (!['confirmed', 'preparing', 'out-for-delivery'].includes(order.status)) {
+    return sendError(res, `Order cannot be marked as delivered from ${order.status} status`, 400);
+  }
+
+  // If not already out-for-delivery, add that status to history first
   if (order.status !== 'out-for-delivery') {
-    return sendError(res, 'Order is not out for delivery', 400);
+    order.statusHistory.push({
+      status: 'out-for-delivery',
+      updatedBy: req.user._id,
+      notes: 'Auto-transitioned to out-for-delivery',
+      timestamp: new Date()
+    });
   }
 
   // Mark as delivered
@@ -393,20 +459,20 @@ const markDelivered = asyncHandler(async (req, res, next) => {
   // Add status history entry
   order.statusHistory.push({
     status: 'delivered',
-    updatedBy: req.user.id,
+    updatedBy: req.user._id,
     notes: notes || 'Delivered successfully'
   });
 
   await order.save();
 
   // Update delivery boy stats
-  const deliveryBoy = await DeliveryBoy.findById(req.user.id);
+  const deliveryBoy = await DeliveryBoy.findById(req.user._id);
   deliveryBoy.totalDeliveries = (deliveryBoy.totalDeliveries || 0) + 1;
   deliveryBoy.completedDeliveries = (deliveryBoy.completedDeliveries || 0) + 1;
 
   // Calculate average delivery time
   const recentOrders = await Order.find({
-    'delivery.assignedTo': req.user.id,
+    'delivery.assignedTo': req.user._id,
     status: 'delivered'
   }).sort({ createdAt: -1 }).limit(10);
 
@@ -431,7 +497,7 @@ const markDelivered = asyncHandler(async (req, res, next) => {
     .populate('customer', 'firstName lastName email phone')
     .populate('delivery.assignedTo', 'firstName lastName phone');
 
-  sendSuccess(res, populatedOrder, 'Order marked as delivered successfully');
+  sendSuccess(res, 'Order marked as delivered successfully', populatedOrder);
 });
 
 /**
@@ -440,7 +506,7 @@ const markDelivered = asyncHandler(async (req, res, next) => {
  * @access  Private (Delivery Boy only)
  */
 const getStats = asyncHandler(async (req, res, next) => {
-  const deliveryBoy = await DeliveryBoy.findById(req.user.id);
+  const deliveryBoy = await DeliveryBoy.findById(req.user._id);
 
   if (!deliveryBoy) {
     return sendError(res, 'Delivery boy not found', 404);
@@ -455,7 +521,7 @@ const getStats = asyncHandler(async (req, res, next) => {
     status: deliveryBoy.status
   };
 
-  sendSuccess(res, stats, 'Stats retrieved successfully');
+  sendSuccess(res, 'Stats retrieved successfully', stats);
 });
 
 /**
@@ -466,11 +532,11 @@ const getStats = asyncHandler(async (req, res, next) => {
 const logout = asyncHandler(async (req, res, next) => {
   // Update availability to offline
   await DeliveryBoy.findByIdAndUpdate(
-    req.user.id,
+    req.user._id,
     { availability: 'offline' }
   );
 
-  sendSuccess(res, null, 'Logged out successfully');
+  sendSuccess(res, 'Logged out successfully', null);
 });
 
 module.exports = {
